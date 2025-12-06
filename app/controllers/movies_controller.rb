@@ -21,14 +21,16 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.all_ratings
-    
-    if params[:ratings].nil? || params[:ratings].empty?
-      @ratings_to_show = @all_ratings
-    else
+    if params[:ratings].present?
       @ratings_to_show = params[:ratings].keys
+    else
+      @ratings_to_show = @all_ratings
     end
-
+    @sort_by = params[:sort_by]
     @movies = Movie.with_ratings(@ratings_to_show)
+    if @sort_by.present?
+      @movies = @movies.order(@sort_by)
+    end
   end
 
   # POST /movies or /movies.json
