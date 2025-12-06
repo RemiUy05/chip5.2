@@ -19,6 +19,18 @@ class MoviesController < ApplicationController
   def edit
   end
 
+  def index
+    @all_ratings = Movie.all_ratings
+    
+    if params[:ratings].nil? || params[:ratings].empty?
+      @ratings_to_show = @all_ratings
+    else
+      @ratings_to_show = params[:ratings].keys
+    end
+
+    @movies = Movie.with_ratings(@ratings_to_show)
+  end
+
   # POST /movies or /movies.json
   def create
     @movie = Movie.new(movie_params)
