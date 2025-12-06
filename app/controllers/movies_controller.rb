@@ -21,14 +21,11 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.all_ratings
-    if params[:ratings].nil? && params[:sort_by].nil? && session[:ratings].present?
-      redirect_to movies_path(ratings: session[:ratings], sort_by: session[:sort_by]) and return
-    end
     if params[:ratings].present?
       @ratings_to_show = params[:ratings].keys
       session[:ratings] = params[:ratings]
-    elsif session[:ratings].present?
-      @ratings_to_show = session[:ratings].keys
+    elsif params[:ratings].nil? && params[:sort_by].nil? && session[:ratings].present?
+      redirect_to movies_path(ratings: session[:ratings], sort_by: session[:sort_by]) and return
     else
       @ratings_to_show = @all_ratings
       session[:ratings] = Hash[@all_ratings.map { |rating| [rating, '1'] }]
@@ -36,12 +33,10 @@ class MoviesController < ApplicationController
     if params[:sort_by].present?
       @sort_by = params[:sort_by]
       session[:sort_by] = @sort_by
-    elsif session[:sort_by].present?
-      @sort_by = session[:sort_by]
     else
-      @sort_by = nil
+      @sort_by = session[:sort_by]
     end
-    @movies = Movie.with_ratings(@ratings_to_show)
+    @movies = Movie.with_ratings(@ratings_to_show)  
     if @sort_by.present?
       @movies = @movies.order(@sort_by)
     end
