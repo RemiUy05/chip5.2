@@ -17,29 +17,24 @@
   
   <div>
     <label class="form-label me-2" for="sort_by">Sort by:</label>
-    <%= select_tag :sort_by, options_for_select([["Title", "title"], ["Release date", "release_date"]], @sort_by), id:    "sort_by", class: "form-select d-inline w-auto" %>
+    <%= select_tag :sort_by,
+                   options_for_select([["Title", "title"],
+                                       ["Release date", "release_date"]],
+                                       @sort_by),
+                   id:    "sort_by",
+                   class: "form-select d-inline w-auto" %>
   </div>
   
   <%= submit_tag 'Refresh', id: 'ratings_submit', class: 'btn btn-primary' %>
 <% end %>
 
-<table>
-  <thead>
-    <tr>
-      <th>Movie Title</th>
-      <th>Rating</th>
-      <th>Release Date</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @movies.each do |movie| %>
-      <tr>
-        <td><%= link_to movie.title, movie %></td>
-        <td><%= movie.rating %></td>
-        <td><%= movie.release_date %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<div id="movies">
+  <% @movies.each do |movie| %>
+    <%= render movie %>
+    <p>
+      <%= link_to "Show this movie", movie %>
+    </p>
+  <% end %>
+</div>
 
 <%= link_to "New movie", new_movie_path %>

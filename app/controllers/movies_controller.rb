@@ -21,22 +21,35 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.all_ratings
+    
+    # Check if we need to redirect to preserve session state
+    if params[:ratings].nil? && params[:sort_by].nil? && (session[:ratings].present? || session[:sort_by].present?)
+      # Coming from a different page - redirect with session params
+      redirect_to movies_path(ratings: session[:ratings], sort_by: session[:sort_by]) and return
+    end
+    
+    # Determine which ratings to show
     if params[:ratings].present?
       @ratings_to_show = params[:ratings].keys
       session[:ratings] = params[:ratings]
-    elsif params[:ratings].nil? && params[:sort_by].nil? && session[:ratings].present?
-      redirect_to movies_path(ratings: session[:ratings], sort_by: session[:sort_by]) and return
     else
+      # No ratings specified - show all
       @ratings_to_show = @all_ratings
+      # Save all ratings to session as default
       session[:ratings] = Hash[@all_ratings.map { |rating| [rating, '1'] }]
     end
+
+    # Determine sort order
     if params[:sort_by].present?
       @sort_by = params[:sort_by]
       session[:sort_by] = @sort_by
     else
       @sort_by = session[:sort_by]
     end
-    @movies = Movie.with_ratings(@ratings_to_show)  
+    
+    # Get filtered and sorted movies
+    @movies = Movie.with_ratings(@ratings_to_show)
+    
     if @sort_by.present?
       @movies = @movies.order(@sort_by)
     end
